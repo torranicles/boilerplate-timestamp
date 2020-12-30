@@ -1,7 +1,5 @@
-// server.js
-// where your node app starts
-
 // init project
+
 var express = require('express');
 var app = express();
 
@@ -20,11 +18,30 @@ app.get("/", function (req, res) {
 
 
 // your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+app.get("/api/timestamp/:date", (req, res) => {
+  let inputDate = req.params.date;
+  const digits = /^\d{5,}/;
+  if (digits.test(inputDate)) {
+    const intDate = parseInt(inputDate);
+    res.json({
+      unix : intDate,
+      utc: new Date(intDate).toUTCString()
+    })
+  } else {
+    let dateObj = new Date(inputDate);
+    console.log(dateObj);
+    if (dateObj.toString() !== "Invalid date") {
+      res.json({
+        unix: dateObj,
+        utc: dateObj.toUTCString()
+      })
+    } else {
+      res.json({
+        error: "Invalid date"
+      })
+    }
+  }
 });
-
-
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
